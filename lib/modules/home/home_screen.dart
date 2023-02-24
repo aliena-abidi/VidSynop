@@ -8,12 +8,17 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xff241030),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xff010101),
-        toolbarHeight: 70,
+        backgroundColor: const Color(0xff241030),
+        toolbarHeight: 90,
+        centerTitle: true,
         title: const Text(
-          'Find your desire\nyoutube summary',
+          'Get your desired\nVideo summary!',
+          style: TextStyle(
+            height: 1.3,
+          ),
         ),
       ),
       body: SizedBox.expand(
@@ -26,7 +31,8 @@ class HomePage extends StatelessWidget {
               Center(
                 child: Image.asset(
                   "assets/logo.gif",
-                  width: 300,
+                  width: 400,
+                  height: 250,
                 ),
               ),
               const SizedBox(height: 60),
@@ -36,9 +42,9 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam. Ut enim ad minim veniam.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                'Welcome to VidSynop! This is a platform where we provide you with the best Youtube Transcript Summarizer with a focus on accuracy and dependability. Generate a written summary of any YouTube Video of your choice.\n\nEnjoy working with VidSynop!',
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      color: const Color(0xff3683F5),
+                      color: Colors.white,
                       height: 1.3,
                     ),
               ),
@@ -46,7 +52,7 @@ class HomePage extends StatelessWidget {
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff3683F5),
+                    backgroundColor: const Color(0xff7336F5),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                     padding:

@@ -104,9 +104,10 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xff241030),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xff010101),
+        backgroundColor: const Color(0xff241030),
         title: const Text(
           'VidSynop',
         ),
@@ -138,7 +139,7 @@ class _MainScreenState extends State<MainScreen> {
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff3683F5),
+                    backgroundColor: const Color(0xff7336F5),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                     padding:
@@ -183,7 +184,7 @@ class _MainScreenState extends State<MainScreen> {
                                   .textTheme
                                   .labelMedium!
                                   .copyWith(
-                                    color: const Color(0xff3683F5),
+                                    color: const Color(0xffFFFFFF),
                                     height: 1.3,
                                   ),
                             ),
@@ -191,7 +192,7 @@ class _MainScreenState extends State<MainScreen> {
                             Center(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xff3683F5),
+                                  backgroundColor: const Color(0xff7336F5),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
                                   padding: const EdgeInsets.symmetric(
@@ -210,6 +211,7 @@ class _MainScreenState extends State<MainScreen> {
                                 child: const Text('Generate Text Summary'),
                               ),
                             ),
+                            const SizedBox(height: 20),
                           ],
                         ),
             ],

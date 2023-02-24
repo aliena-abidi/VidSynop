@@ -25,26 +25,37 @@ class _SummaryPageState extends State<SummaryPage> {
   }
 
   Future<void> generateText() async {
-    const String apiKey = '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';
-    const String apiUrl =
-        'https://api.openai.com/v1/engines/davinci-codex/completions';
+    const String apiKey = 'wK9UNvLbzQBGs1hH9AFE8zBY4njJdyzfSvCUO7S2';
+    const String apiUrl = 'https://api.cohere.ai/generate';
 
     setState(() => isLoading = true);
 
     final response = await http.post(
       Uri.parse(apiUrl),
       headers: {
+        'accept': 'application/json',
         'Content-Type': 'application/json',
+        'Cohere-Version': '2022-12-06',
         'Authorization': 'Bearer $apiKey',
       },
       body: jsonEncode(
-          {'prompt': widget.caption, 'max_tokens': 4096, 'n': 1, 'stop': '\n'}),
+        {
+          'model': 'xlarge',
+          'truncate': 'END',
+          'prompt': widget.caption,
+          'max_tokens': 100,
+          'temperature': 0.8,
+          'k': 0,
+          'p': 0.75
+        },
+      ),
     );
 
     final result = jsonDecode(response.body);
     if (response.statusCode == 200) {
       setState(() => isLoading = false);
-      setState(() => summary = result['choices'][0]['text']);
+      log(result.toString());
+      setState(() => summary = result['generations'][0]['text']);
 
       // return
       // result['choices'][0]['text'];
@@ -58,9 +69,10 @@ class _SummaryPageState extends State<SummaryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xff241030),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xff010101),
+        backgroundColor: const Color(0xff241030),
         title: const Text(
           'Summary',
         ),
@@ -79,9 +91,9 @@ class _SummaryPageState extends State<SummaryPage> {
                       height: 20,
                     ),
                     Text(
-                      widget.caption,
+                      summary,
                       style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                            color: const Color(0xff3683F5),
+                            color: const Color(0xffFFFFFF),
                             height: 1.3,
                             fontSize: 20,
                           ),

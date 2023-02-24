@@ -32,12 +32,15 @@ class _SplashPageState extends State<SplashPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            SvgPicture.asset('assets/youtube_blue.svg'),
+            SvgPicture.asset(
+              'assets/youtube_blue.svg',
+              color: const Color(0xffF53636),
+            ),
             const SizedBox(height: 20),
             Text(
               'VidSynop',
               style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                    color: const Color(0xff3683F5),
+                    color: const Color(0xffFFFFFF),
                     fontWeight: FontWeight.bold,
                   ),
             ),
