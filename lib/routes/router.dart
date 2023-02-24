@@ -24,7 +24,11 @@ class MyRouter {
       case MainScreen.routeName:
         return MaterialPageRoute(builder: (_) => const MainScreen());
       case SummaryPage.routeName:
-        return MaterialPageRoute(builder: (_) => const SummaryPage());
+        return MaterialPageRoute(
+          builder: (_) => SummaryPage(
+            caption: settings.arguments as String,
+          ),
+        );
 
       default:
         return _errorRoute();

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:vidsynop/data/models/youtube_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:googleapis_auth/googleapis_auth.dart';
-import 'package:googleapis/youtube/v3.dart';
+import 'package:vidsynop/modules/home/summary_screen.dart';
+import 'package:youtube_caption_scraper/youtube_caption_scraper.dart';
 
 class MainScreen extends StatefulWidget {
   static const String routeName = '/MainScreen-page';
@@ -21,6 +21,8 @@ class _MainScreenState extends State<MainScreen> {
   bool isVideoDetailFetched = false;
   bool isLoading = false;
 
+  String caption = '';
+
   YoutubeModel youtubeModel = YoutubeModel();
 
   @override
@@ -29,17 +31,43 @@ class _MainScreenState extends State<MainScreen> {
     urlController = TextEditingController();
   }
 
-  void generateSubtitle(String videoId, String apiKey) async {
-    log(videoId);
-    final captionUrl =
-        'https://www.googleapis.com/youtube/v3/captions/$videoId?tfmt=srt&key=$apiKey';
-    final captionResponse = await http.get(Uri.parse(captionUrl));
+  Future<bool> generateSubtitle(String videoId) async {
+    final captionScraper = YouTubeCaptionScraper();
 
-    if (captionResponse.statusCode == 200) {
-      log(captionResponse.body.toString());
-    } else {
-      throw Exception(
-          'Failed to retrieve captions: ${captionResponse.statusCode}');
+    try {
+      final captionTracks = await captionScraper.getCaptionTracks(videoId);
+
+      final subtitles = await captionScraper.getSubtitles(captionTracks[0]);
+      // Use the subtitles however you want.
+
+      if (subtitles.isEmpty) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No Caption found'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.red,
+          ),
+        );
+        return false;
+      }
+
+      caption = List<String>.from(subtitles.map((e) => e.text)).join(' ');
+      // for (final subtitle in subtitles) {
+      //   // print('${subtitle.start} - ${subtitle.duration} - ${subtitle.text}');
+      //   caption += subtitle.text;
+      // }
+      return true;
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
     }
   }
 
@@ -64,7 +92,7 @@ class _MainScreenState extends State<MainScreen> {
                     ['maxres']['url']
                 .toString());
       });
-      urlController.clear();
+      // urlController.clear();
       // ignore: use_build_context_synchronously
       FocusScope.of(context).unfocus();
     } else {
@@ -170,11 +198,14 @@ class _MainScreenState extends State<MainScreen> {
                                       horizontal: 44, vertical: 8),
                                 ),
                                 onPressed: () {
-                                  generateSubtitle(youtubeModel.id!,
-                                      'nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCvBdOriyS9oJav\n06kaTN88VUxRvAbEDJ6CY6oT0b8648X9cerLWLC0Mdqs7PcEWWjbdqpKwvcH+XsX\nP5/7SCqggFEscWzBTf9KsA7k1/5/RZuN8sB0pNwAAQvo4O9msiV/eJ3N+CrPTBmf\njmHBQEJVugaKfqMSzfdJhtXSetfYAlkIxUhGTp1wBzFn7XBkBZJKTBKHqacTatBJ\nMCWaVxHItx5m2+uY4TCxmNJPkVT/uBX5bAFy2vvSj/q2q+7sL1mKGZRuGCRMwCyv\nTMrRsNoObUeEM/po7WxQW7SOT0anWBT07qiA31pRsv5TIBPbhJ0ov7hdrPSTULWn\nGN56INV7AgMBAAECggEAIKigr8DeEThXBeYkBtFTUonEHPhN9uU36rK4OMyJt25r\nMnjATEN3bZhj6qKpETmx1EnXSu4IdId8DYGE07nKonpvKzDbD1MDkSc7ED6xsYQG\nm70xZlKg7qtDUqguY+ZYEuop4BYvvtC/c0N5QDtCZYa507v/p/Gg9Cph2c2sWxT9\nrdW8FKO9S7eMkH5g9Xl7mwU+aInColZkabgKL3B7vVtWC3e5179UKXAie8NIs7n6\n8CiUatGnAW1IIoJ9IZvksnoouG5DAUVkzVigjE+EZTHXLmLOMm5kAJuDyxBk7j+5\nk6ry817ZfdasxUYGi0B/WOIUO0CHgfhKDf2jPxOj+QKBgQDp7tw5or55Q7ayqni8\ndsmiGZkJm8p69eq61XWfGOq1FDP09HAyi//ZDSbMH94WMr5ClwMXAoLjMczB9gqE\nzwKfiCU6RRs0yos6+TOEmv7Y7HMCzPhpmydeCp6X0N+cOA48RxTosCEdtALYG09X\nlECn3G7aUcRBCBXuD7umQqgzDwKBgQC/iF6fmRQ224NWZk84xqTQrJwlKmsnQaxn\n7djhqZTS0TYIgE4C38Ojnb2IwLwXMZHVWWsaDhRGMwV3Lnpxda64KF8BiOhDxvH5\nq+/T1RmyJ8V3JAFWHwwndLQU1fd8Et9sIP8lJkMV+oa1XV/9VcA1fob6nUH34eZl\nEhsQTUQG1QKBgQCfWxuiF37xVHNMWlxM5g6M4isiJIJWKNdx1p99dZfNKqoKH8me\nZUgwL4lSXBMJxB9fdUehkRBgfDgjmNuphOsgibnya8kQuTkHP2Mc3gjk9I2URtSh\n/BNhOJK4kI0C+hyYa0OPDwxAE7QsSs5NtqwkrUDGcBTkyAFIXmdR5u51eQKBgBCm\nSRt0kiZGpL8g+6gC1JbzOkucyV3LPrJ2IZFUTYSZ/Sl2BdIII5iYgL5firo1a+jw\n8fd829RSYRpAJxKv2TVXBRM8FHy30ZcTlDCE6Mvs2ySFM7yJzGOtqG3bP71AYr2i\njKttDQ3fDlC7wjlid+fujMtCWlazA3UrwsCDBvPVAoGAMFVel0xdANJy6cJJjvui\njTC6XgWxhVu6IELeatevD7s9aLjfaIX47zoA0jQU2yB9UEQx04OqbdtudnfkLqD0\n8Qeb+QTsI6DUJfdzqVauuvwRW4OxtOswJQHxZd9AfHiuUzvoq5s5ODruPX+JvhL8\n4cHofINzf888ZHCS+AHNwns=');
-
-                                  // Navigator.pushNamed(
-                                  //     context, SummaryPage.routeName);
+                                  generateSubtitle(urlController.text)
+                                      .then((value) {
+                                    if (value) {
+                                      return Navigator.pushNamed(
+                                          context, SummaryPage.routeName,
+                                          arguments: caption);
+                                    }
+                                  });
                                 },
                                 child: const Text('Generate Text Summary'),
                               ),
